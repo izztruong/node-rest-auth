@@ -1,4 +1,4 @@
-var createError = require('http-errors');
+//var createError = require('http-errors');
 var express = require('express');
 
 var mongoose = require('mongoose');
@@ -20,10 +20,6 @@ app.use('/users', usersRouter);
 
 app.use('/api', apiRouter);
 
-app.get('/', function(req, res) {
-  res.send('Page under construction.');
-});
-
 mongoose.connect(config.database, { useNewUrlParser: true, useUnifiedTopology: true });
 
 // var cors = require('cors')
@@ -40,3 +36,9 @@ app.use(function(req, res, next) {
 });
 
 module.exports = app;
+
+const port = 3000;
+
+app.listen(port, () => {
+  console.log(`Example app listening on port ${port}`)
+});
