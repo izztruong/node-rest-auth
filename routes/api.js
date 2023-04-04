@@ -1,4 +1,4 @@
-var mongoose = require('mongoose');
+
 var passport = require('passport');
 var config = require('../config/database');
 require('../config/passport')(passport);
@@ -8,16 +8,23 @@ var router = express.Router();
 var User = require("../models/user");
 var Book = require("../models/book");
 
+const bodyParser = require("body-parser");
+
+// // parse requests of content-type - application/json
+router.use(bodyParser.json());
+
+const parser = bodyParser.urlencoded({ extended: true });
+
+router.use(parser);
 
 router.post('/signup', async function (req, res) {
 
-
-    if (!req.query.username || !req.query.password) {
+    if (!req.body.username || !req.body.password) {
         res.json({ success: false, msg: 'Please pass username and password.' });
     } else {
         var newUser = new User({
-            username: req.query.username,
-            password: req.query.password
+            username: req.body.username,
+            password: req.body.password
         });
         // save the user
         await newUser.save();
@@ -29,9 +36,9 @@ router.post('/signup', async function (req, res) {
 
 router.post('/signin', async function (req, res) {
 
-    let user = await User.findOne({username: req.query.username});
+    console.log(req.body);
 
-    console.log(req.query);
+    let user = await User.findOne({username: req.body.username});
 
     console.log(user);
 
@@ -39,7 +46,7 @@ router.post('/signin', async function (req, res) {
         res.status(401).send({ success: false, msg: 'Authentication failed. User not found.' });
     } else {
         // check if password matches
-        user.comparePassword(req.query.password, function (err, isMatch) {
+        user.comparePassword(req.body.password, function (err, isMatch) {
             if (isMatch && !err) {
                 // if user is found and password is right create a token
                 var token = jwt.sign(user.toJSON(), config.secret);
